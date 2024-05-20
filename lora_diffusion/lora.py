@@ -9,6 +9,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from diffusers.models.lora import LoRACompatibleLinear, LoRACompatibleConv
+
 try:
     from safetensors.torch import safe_open
     from safetensors.torch import save_file as safe_save
@@ -727,6 +729,8 @@ def monkeypatch_or_replace_lora_extended(
 
         if (_child_module.__class__ == nn.Linear) or (
             _child_module.__class__ == LoraInjectedLinear
+        ) or (
+            _child_module.__class__ == LoRACompatibleLinear
         ):
             if len(loras[0].shape) != 2:
                 continue
@@ -752,6 +756,8 @@ def monkeypatch_or_replace_lora_extended(
 
         elif (_child_module.__class__ == nn.Conv2d) or (
             _child_module.__class__ == LoraInjectedConv2d
+        ) or (
+            _child_module.__class__ == LoRACompatibleConv
         ):
             if len(loras[0].shape) != 4:
                 continue
